@@ -1,0 +1,93 @@
+Just change the NAME given in your lab 
+
+export BUCKET_NAME=
+export BUCKET_LOCATION=
+
+### Task 1 
+
+gsutil mb -l $BUCKET_LOCATION -b on gs://$BUCKET_NAME 
+
+###  Task 2 
+
+bq mk drl
+bq load --source_format=CSV drl.pilot-event-times spls/gsp396/lab2.csv --auto-detect
+
+###  Task 3 
+
+gsutil cp gs://spls/gsp396/DRL2.ipynb .
+
+### Task 4 
+
+Run all of the cells in the DRL2.ipynb file.
+ 
+When setting the PROJECT variable, replace its value with the unique project id of the qwiklabs project
+
+###  Task 5
+
+## Navigate to Vertex AI > Model Registry
+ 
+Click Import
+ 
+Name the model drl-pilot-ranking
+ 
+Choose the dynamically selected region variable displayed in Task 4 for the region
+ 
+# Click Model Settings
+ 
+Choose 2.8 for the Model Framework Version
+ 
+# Navigate and select the following path for the Model Artifact Location:
+ 
+ 
+PROJECT-ID/model
+
+###  Task 6 
+
+Navigate to Vertex AI > Endpoints
+ 
+Click Create Endpoint
+ 
+Name the endpoint drl-pr-endpoint
+ 
+Choose the dynamically generated region for the region
+ 
+Ensure the traffic split is set to 100%
+ 
+Click on advanced scaling settings
+ 
+Choose n1-standard-2 for machine type
+ 
+Click Create
+
+###  Task 7 
+
+## Return to your notebook tab
+ 
+# Create a new cell and add the following code:
+ 
+
+from google.cloud import aiplatform
+ 
+PROJECT = '[project-id]'
+LOCATION = '[region]'
+ENDPOINT_ID = '[your-endpoint-id]'
+ 
+endpoint = aiplatform.Endpoint(ENDPOINT_ID, project=PROJECT, location=LOCATION)
+ 
+instances = [{'pilot_id': [11],
+'ename': ['Practice'],
+'events_name':['Project Manhattan'],
+'minimum_time': [80.0]
+}]
+ 
+endpoint.predict(instances = instances)
+ 
+# Replace [project-id] with the unique qwiklabs project id.
+ 
+# Replace [region] with the dynamically selected region variable used for the endpoint
+ 
+# Replace [your-endpoint-id] with the endpoint's unique ID
+ 
+# Both the region and endpoint ID can be found in the Endpoints page in the console
+ 
+# Run the cell in your Vertex Notebook
